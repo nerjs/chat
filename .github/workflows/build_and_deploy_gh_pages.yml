@@ -31,7 +31,7 @@ jobs:
       - name: Dependencies installation
         run: npm install
       - name: Lint
-        run: npm run lint --if-present
+        run: npm run lint
       - name: Test and coverage
         run: npm run test -- --coverage
       - name: Build app
