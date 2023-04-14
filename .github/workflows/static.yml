@@ -38,17 +38,12 @@ jobs:
         run: npm run build
       - name: Move the coverage folder to the build folder
         run: mv ./coverage ./build
-      - name: Archive production artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: dist-without-markdown
-          path: build
-      - name: Archive code coverage results
+      - name: Archive build app
         uses: actions/upload-artifact@v3
         with:
           name: production-build
           path: build
-          retention-days: 7
+          retention-days: 3
           
   deploy:
     environment:
@@ -64,8 +59,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: production-build
+      - name: First ls
+        run: ls -la
       - name: Setup Pages
         uses: actions/configure-pages@v3
+      - name: second ls
+        run: ls -la
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
