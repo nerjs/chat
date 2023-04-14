@@ -22,7 +22,34 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
+  
+  build_and_test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Dependencies installation
+        run: npm install
+      - name: Lint
+        run: npm run lint --if-present
+      - name: Test and coverage
+        run: npm run test -- --coverage
+      - name: Build app
+        run: npm run build
+      - name: Move the coverage folder to the build folder
+        run: mv ./coverage ./build
+      - name: Archive production artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: dist-without-markdown
+          path: build
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v3
+        with:
+          name: production-build
+          path: build
+          retention-days: 7
+          
   deploy:
     environment:
       name: github-pages
@@ -31,13 +58,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Download build folder
+        uses: actions/download-artifact@v3
+        with:
+          name: production-build
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
           # Upload entire repository
-          path: '.'
+          path: './build'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
