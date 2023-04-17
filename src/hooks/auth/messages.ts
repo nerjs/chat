@@ -1,0 +1,6 @@
+export const WORKER_UNMOUNTED = 'useAuthWorker is unmounted'
+export const WORKER_ERROR_UNMOUNTED = 'useAuthWorker unmounted error'
+export const IN_LOADING = 'The user is currently loading'
+export const NOT_LOADED = 'The user is not yet loaded'
+export const IS_AUTHORIZED = 'User is authorized'
+export const NOT_AUTHORIZED = 'The user is not yet authorized'
