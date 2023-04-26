@@ -1,8 +1,10 @@
 import { useContext } from 'react'
 import { AuthContext } from './context'
 
-export const useAuth = () => {
-  const { user, loading, loaded, error, loginWithEmail, registrationWithEmail, logout } = useContext(AuthContext)
+export const useAuthContext = () => useContext(AuthContext)
 
-  return [user, { loading, loaded, error }, { registrationWithEmail, loginWithEmail, logout }] as const
+export const useAuth = () => {
+  const { user, ...authCtx } = useAuthContext()
+
+  return [user, authCtx] as const
 }

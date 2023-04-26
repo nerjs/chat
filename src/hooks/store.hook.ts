@@ -1,62 +1,58 @@
-import { SetStateAction, useCallback, useLayoutEffect, useMemo, useState } from 'react'
-import { LocalStorage, MemoryStorage, SessionStorage } from '../utils/storage'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { usePrevState } from './prevstate.hook'
 
-const prefix = process.env.APP_NAME || '@app'
+export type StoreValue = number | string | boolean | object
 
-const mstore = new MemoryStorage()
-const sstore = new SessionStorage()
-const lstore = new LocalStorage()
+const PREFIX = 'app'
 
-export enum TypeStore {
-  SESSION,
-  LOCAL,
-  MEMORY,
+const buildKey = (key: string) => `${PREFIX}:${key}`
+const readData = <V>(store: Storage, key: string): V | null => {
+  const resultStr = store.getItem(buildKey(key))
+  if (resultStr == null) return null
+
+  try {
+    const res = JSON.parse(buildKey(key))
+    if (res == null) return null
+    return res
+  } catch (err) {
+    console.error(err)
+    store.removeItem(buildKey(key))
+    return null
+  }
 }
 
-export const useStore = <T>(key: string, typeStore: TypeStore, initialValue?: T | (() => T)) => {
-  const store = useMemo(() => {
-    if (typeStore === TypeStore.MEMORY) return mstore
-    if (typeStore === TypeStore.LOCAL) return lstore
-    if (typeStore === TypeStore.SESSION) return sstore
-    throw new Error(`Incorrect store type: ${typeStore}`)
-  }, [typeStore])
+type TypeStore = 'session' | 'local'
 
-  const keyItem = `${prefix}:${key}`
+export const useGetStore = (type: TypeStore) => useMemo<Storage>(() => (type === 'session' ? sessionStorage : localStorage), [type])
 
-  const [value, setValue] = useState<T>(initialValue as T)
+export const useStore = <V extends StoreValue>(
+  key: string,
+  type?: TypeStore,
+): [data: V | null, setStoreData: (value: V | null) => void] => {
+  const store = useGetStore(type || 'local')
+  const [data, setData] = useState<V | null>(() => readData(store, key))
 
-  useLayoutEffect(() => {
-    const str = store.getItem(keyItem)
-    if (!str) return
-    try {
-      const data = JSON.parse(str)
-      setValue(data)
-    } catch (err) {
-      console.warn(err)
-      store.removeItem(keyItem)
-    }
-  }, [keyItem, store])
-
-  const setItem = useCallback(
-    (value: SetStateAction<T>) => {
-      setValue(prevValue => {
-        const dataValue: T = typeof value === 'function' ? (value as any)(prevValue) : value
-        store.setItem(keyItem, JSON.stringify(dataValue))
-
-        return dataValue
-      })
+  const setStore = useCallback(
+    (value: V | null) => {
+      if (value === null) {
+        store.removeItem(buildKey(key))
+        setData(null)
+      } else {
+        setData(value)
+        store.setItem(buildKey(key), JSON.stringify(value))
+      }
     },
-    [keyItem, store],
+    [key, store],
   )
 
-  const removeItem = useCallback(() => {
-    store.removeItem(keyItem)
-    setValue(initialValue as T)
-  }, [keyItem, store, initialValue])
+  const prevKey = usePrevState(key)
+  const prevStore = usePrevState(store)
 
-  return [value, setItem, removeItem] as const
+  useEffect(() => {
+    if (!prevStore || (key === prevKey && store === prevStore)) return
+
+    setData(readData(store, key))
+  }, [key, store, prevKey, prevStore])
+
+  return [data, setStore]
 }
-
-export const useMemoryStore = <T = any>(key: string, initialValue?: T | (() => T)) => useStore(key, TypeStore.MEMORY, initialValue)
-export const useSessionStore = <T = any>(key: string, initialValue?: T | (() => T)) => useStore(key, TypeStore.SESSION, initialValue)
-export const useLocalStore = <T = any>(key: string, initialValue?: T | (() => T)) => useStore(key, TypeStore.LOCAL, initialValue)

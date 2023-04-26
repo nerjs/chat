@@ -1,19 +1,26 @@
-import { ITheme } from '../../interfaces/theme'
-
-export const defaultTheme: ITheme = {
-  background: {
-    body: '#181818',
-    primary: '#2c2c2c',
-    secondary: '#212121',
+export const defaultTheme = {
+  bc: {
+    body: '#7f828c',
+    primary: '#1e1f23',
+    secondary: '#27292d',
+    popup: '#1d1e22',
+    active: '#414246',
+    tooltip: '#414145',
+    warning: '#4b3124',
   },
   text: {
+    color: {
+      primary: '#f4f4f6',
+      secondary: '#6c6d71',
+      item: '#eceeee',
+      important: '#cbcbce',
+      warning: '#c58768',
+    },
     size: {
       primary: 16,
       secondary: 14,
-    },
-    color: {
-      primary: '#ffffff',
-      secondary: '#9e9e9e',
+      item: 16,
+      important: 14,
     },
   },
 }
