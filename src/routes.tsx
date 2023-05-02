@@ -1,7 +1,6 @@
 import { createHashRouter } from 'react-router-dom'
 import { BodyError } from './layouts/body/error'
 import { BodyLayout } from './layouts/body/layout'
-import { HomePage } from './pages/home/page'
 
 export const routes = createHashRouter([
   {
@@ -12,7 +11,7 @@ export const routes = createHashRouter([
       {
         errorElement: <BodyError />,
         index: true,
-        element: <HomePage />,
+        element: <>HomePage </>,
       },
     ],
   },

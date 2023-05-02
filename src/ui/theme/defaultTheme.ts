@@ -23,4 +23,14 @@ export const defaultTheme = {
       important: 14,
     },
   },
+  header: {
+    sizes: {
+      height: 30,
+    },
+  },
+  sender: {
+    sizes: {
+      height: 30,
+    },
+  },
 }
