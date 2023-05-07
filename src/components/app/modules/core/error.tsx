@@ -2,7 +2,6 @@ import { FC } from 'react'
 import { MainWrapperUi } from '../../../../ui/block.ui'
 import { FullSizeFlexUi } from '../../../../ui/flex.ui'
 import { AlertHeaderUi, AlertUi } from '../../../../ui/alert.ui'
-import { useRouteError } from 'react-router-dom'
 import { hasError, is404RoutingError, isError } from '../../../../utils/is'
 
 const NotFound = ({ message }: { message?: string }) => (
@@ -20,7 +19,7 @@ const OtherError = ({ error }: { error: Error }) => (
 )
 
 const CoreAppError: FC = () => {
-  const err = useRouteError()
+  const err = {}
 
   return (
     <MainWrapperUi>
