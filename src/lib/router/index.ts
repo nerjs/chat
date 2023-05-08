@@ -8,8 +8,6 @@ export * from './lib/hash.router'
 export * from './lib/memory.router'
 export * from './lib/session.router'
 export * from './lib/storage.router'
-export * from './lib/matcher'
-import * as pathToRegexp from 'path-to-regexp'
 
 // @ts-expect-error
 window.pathToRegexp = pathToRegexp
