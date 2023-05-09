@@ -17,3 +17,17 @@ export type OptionalKeys<T> = {
 }[keyof T]
 
 export type HasRequiredField<T> = RequiredKeys<T> extends never ? false : true
+
+type KeysOfType<T, SelectedType> = {
+  [key in keyof T]: SelectedType extends T[key] ? key : never
+}[keyof T]
+
+export type OnlyOptional<T> = Partial<Pick<T, KeysOfType<T, undefined>>>
+
+export type OnlyRequired<T> = Omit<T, KeysOfType<T, undefined>>
+
+export type OptionalUndefined<T> = OnlyOptional<T> & OnlyRequired<T>
+
+export type ClearMaybeObject<T> = T extends Nullish ? T : OptionalUndefined<T>
+
+export type IsEmpty<T> = KeysOfType<T, any> extends never ? true : false
